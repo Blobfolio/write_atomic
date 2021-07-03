@@ -17,11 +17,8 @@ exclude = [
 ]
 
 [dependencies]
+rand = "0.8"
 tempfile = "3.2"
-
-[dependencies.rand]
-version = "0.8"
-features = [ "small_rng" ]
 
 [target.'cfg(unix)'.dependencies]
 libc = ">= 0.2.34"

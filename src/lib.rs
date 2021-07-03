@@ -63,10 +63,8 @@ write_atomic = "0.1.*"
 #[cfg(not(target_os = "linux"))] use fallback as linux;
 use rand::{
 	distributions::Alphanumeric,
+	prelude::ThreadRng,
 	Rng,
-	rngs::SmallRng,
-	SeedableRng,
-	self,
 };
 use std::{
 	ffi::OsString,
@@ -204,11 +202,10 @@ fn copy_ownership(source: &std::fs::Metadata, dest: &File) -> Result<()> {
 ///
 /// To avoid temporary allocations, each random character is inserted into the
 /// `Ostring` one-at-a-time. It's a bit janky-looking, but gets the job done.
-fn random_name() -> OsString {
+fn random_name(rng: &mut ThreadRng) -> OsString {
 	let mut buf = OsString::with_capacity(15);
 	buf.push(".");
-	SmallRng::from_entropy()
-		.sample_iter(&Alphanumeric)
+	rng.sample_iter(&Alphanumeric)
 		.take(10)
 		.for_each(|b| buf.push(unsafe { std::str::from_utf8_unchecked(&[b]) }));
 	buf.push(".tmp");
@@ -257,10 +254,11 @@ fn write_direct_end(file: &mut File, dst: &Path) -> Result<()> {
 	}
 
 	// Otherwise we need a a unique location.
+	let mut rng = rand::thread_rng();
 	let mut dst_tmp = dst.to_path_buf();
 	for _ in 0..32768 {
 		// Build a new file name.
-		dst_tmp.set_file_name(random_name());
+		dst_tmp.set_file_name(random_name(&mut rng));
 
 		match linux::link_at(file, &dst_tmp) {
 			Ok(()) => return std::fs::rename(&dst_tmp, dst).map_err(|e| {
@@ -318,11 +316,13 @@ mod tests {
 		// temporary directory!
 		let mut path = std::env::temp_dir();
 		if ! path.is_dir() { return; }
-		path.push(random_name());
+
+		let mut rng = rand::thread_rng();
+		path.push(random_name(&mut rng));
 
 		// Make sure the name is unique.
 		while path.exists() {
-			path.set_file_name(random_name());
+			path.set_file_name(random_name(&mut rng));
 		}
 
 		// Now that we have a path, let's try to write to it!
