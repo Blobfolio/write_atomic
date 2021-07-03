@@ -69,6 +69,7 @@ use rand::{
 	self,
 };
 use std::{
+	cell::UnsafeCell,
 	ffi::OsString,
 	fs::File,
 	io::{
@@ -196,6 +197,10 @@ fn copy_ownership(source: &std::fs::Metadata, dest: &File) -> Result<()> {
 	else { Err(Error::last_os_error()) }
 }
 
+thread_local! {
+	static THREAD_RNG: UnsafeCell<SmallRng> = UnsafeCell::new(SmallRng::from_entropy());
+}
+
 /// # Random Tempfile Name
 ///
 /// This is similar to how `tempfile` handles it. The resulting name starts
@@ -207,10 +212,12 @@ fn copy_ownership(source: &std::fs::Metadata, dest: &File) -> Result<()> {
 fn random_name() -> OsString {
 	let mut buf = OsString::with_capacity(15);
 	buf.push(".");
-	SmallRng::from_entropy()
-		.sample_iter(&Alphanumeric)
-		.take(10)
-		.for_each(|b| buf.push(unsafe { std::str::from_utf8_unchecked(&[b]) }));
+	THREAD_RNG.with(|rng| unsafe {
+		(&mut *rng.get())
+			.sample_iter(&Alphanumeric)
+			.take(10)
+			.for_each(|b| buf.push(std::str::from_utf8_unchecked(&[b])))
+	});
 	buf.push(".tmp");
 	buf
 }
