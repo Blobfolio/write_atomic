@@ -198,16 +198,17 @@ fn copy_ownership(source: &std::fs::Metadata, dest: &File) -> Result<()> {
 /// # Random Tempfile Name
 ///
 /// This is similar to how `tempfile` handles it. The resulting name starts
-/// with a dot, ends with `.tmp`, and in between there are 10 random
+/// with a dot, ends with `.tmp`, and in between there are 5 random
 /// alphanumeric characters.
 ///
 /// To avoid temporary allocations, each random character is inserted into the
 /// `Ostring` one-at-a-time. It's a bit janky-looking, but gets the job done.
-fn random_name(rng: &mut SmallRng) -> OsString {
-	let mut buf = OsString::with_capacity(15);
+fn random_name() -> OsString {
+	let mut buf = OsString::with_capacity(10);
 	buf.push(".");
-	rng.sample_iter(&Alphanumeric)
-		.take(10)
+	SmallRng::from_entropy()
+		.sample_iter(&Alphanumeric)
+		.take(5)
 		.for_each(|b| buf.push(unsafe { std::str::from_utf8_unchecked(&[b]) }));
 	buf.push(".tmp");
 	buf
@@ -255,11 +256,10 @@ fn write_direct_end(file: &mut File, dst: &Path) -> Result<()> {
 	}
 
 	// Otherwise we need a a unique location.
-	let mut rng = SmallRng::from_entropy();
 	let mut dst_tmp = dst.to_path_buf();
 	for _ in 0..32768 {
 		// Build a new file name.
-		dst_tmp.set_file_name(random_name(&mut rng));
+		dst_tmp.set_file_name(random_name());
 
 		match linux::link_at(file, &dst_tmp) {
 			Ok(()) => return std::fs::rename(&dst_tmp, dst).map_err(|e| {
@@ -318,12 +318,11 @@ mod tests {
 		let mut path = std::env::temp_dir();
 		if ! path.is_dir() { return; }
 
-		let mut rng = SmallRng::from_entropy();
-		path.push(random_name(&mut rng));
+		path.push(random_name());
 
 		// Make sure the name is unique.
 		while path.exists() {
-			path.set_file_name(random_name(&mut rng));
+			path.set_file_name(random_name());
 		}
 
 		// Now that we have a path, let's try to write to it!
