@@ -69,10 +69,10 @@ use rand::{
 	self,
 };
 use std::{
-	cell::UnsafeCell,
 	ffi::OsString,
 	fs::File,
 	io::{
+		BufWriter,
 		Error,
 		ErrorKind,
 		Result,
@@ -115,7 +115,7 @@ where P: AsRef<Path> {
 
 	// Write via O_TMPFILE if we can.
 	if let Ok(file) = linux::nonexclusive_tempfile(&parent) {
-		write_direct(file, &src, data)
+		write_direct(BufWriter::new(file), &src, data)
 	}
 	// Otherwise fall back to the trusty `tempfile`.
 	else {
@@ -230,9 +230,10 @@ fn touch_if(src: &Path) -> Result<bool> {
 /// # Write Direct.
 ///
 /// This is an optimized file write for modern Linux installs.
-fn write_direct(mut file: File, dst: &Path, data: &[u8]) -> Result<()> {
+fn write_direct(mut file: BufWriter<File>, dst: &Path, data: &[u8]) -> Result<()> {
 	file.write_all(data)?;
 	file.flush()?;
+	let mut file = file.into_inner()?;
 
 	let touched = touch_if(dst)?;
 	match write_direct_end(&mut file, dst) {
