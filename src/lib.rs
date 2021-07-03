@@ -63,8 +63,9 @@ write_atomic = "0.1.*"
 #[cfg(not(target_os = "linux"))] use fallback as linux;
 use rand::{
 	distributions::Alphanumeric,
-	prelude::ThreadRng,
 	Rng,
+	rngs::SmallRng,
+	SeedableRng,
 };
 use std::{
 	ffi::OsString,
@@ -202,7 +203,7 @@ fn copy_ownership(source: &std::fs::Metadata, dest: &File) -> Result<()> {
 ///
 /// To avoid temporary allocations, each random character is inserted into the
 /// `Ostring` one-at-a-time. It's a bit janky-looking, but gets the job done.
-fn random_name(rng: &mut ThreadRng) -> OsString {
+fn random_name(rng: &mut SmallRng) -> OsString {
 	let mut buf = OsString::with_capacity(15);
 	buf.push(".");
 	rng.sample_iter(&Alphanumeric)
@@ -254,7 +255,7 @@ fn write_direct_end(file: &mut File, dst: &Path) -> Result<()> {
 	}
 
 	// Otherwise we need a a unique location.
-	let mut rng = rand::thread_rng();
+	let mut rng = SmallRng::from_entropy();
 	let mut dst_tmp = dst.to_path_buf();
 	for _ in 0..32768 {
 		// Build a new file name.
@@ -317,7 +318,7 @@ mod tests {
 		let mut path = std::env::temp_dir();
 		if ! path.is_dir() { return; }
 
-		let mut rng = rand::thread_rng();
+		let mut rng = SmallRng::from_entropy();
 		path.push(random_name(&mut rng));
 
 		// Make sure the name is unique.
