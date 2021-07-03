@@ -4,6 +4,7 @@
 [![crates.io](https://img.shields.io/crates/v/write_atomic.svg)](https://crates.io/crates/write_atomic)
 [![Build Status](https://github.com/Blobfolio/write_atomic/workflows/Build/badge.svg)](https://github.com/Blobfolio/write_atomic/actions)
 
+**ALPHA**: Note this crate is a work-in-progress and is not yet ready for production use.
 
 Write Atomic is a stripped-down remake of [`tempfile-fast`](https://crates.io/crates/tempfile-fast), boiling everything down to a single method: [`write_file`].
 
