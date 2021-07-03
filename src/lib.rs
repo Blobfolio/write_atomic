@@ -177,13 +177,13 @@ fn copy_metadata(src: &Path, dst: &File) -> Result<()> {
 /// # Copy Ownership.
 ///
 /// On Unix systems, we need to copy ownership in addition to permissions.
-fn copy_ownership(source: &std::fs::Metadata, dest: &File) -> Result<()> {
+fn copy_ownership(source: &std::fs::Metadata, dst: &File) -> Result<()> {
 	use std::os::unix::{
 		fs::MetadataExt,
 		io::AsRawFd,
 	};
 
-	let fd = dest.as_raw_fd();
+	let fd = dst.as_raw_fd();
 	if 0 == unsafe { libc::fchown(fd, source.uid(), source.gid()) } { Ok(()) }
 	else { Err(Error::last_os_error()) }
 }
@@ -236,7 +236,8 @@ fn write_direct_end(file: &mut File, dst: &Path) -> Result<()> {
 	let mut rng = ::rand::thread_rng();
 	for _ in 0..32768 {
 		// Build a new file name.
-		dst_tmp.set_file_name(format!(".{:x}.tmp", rng.next_u64()));
+		dst_tmp.pop();
+		dst_tmp.push(format!(".{:x}.tmp", rng.next_u64()));
 
 		match linux::link_at(file, &dst_tmp) {
 			Ok(()) => return std::fs::rename(&dst_tmp, dst).map_err(|e| {
