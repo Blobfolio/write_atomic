@@ -1,0 +1,27 @@
+[package]
+name = "write_atomic"
+version = "0.1.0"
+authors = ["Blobfolio, LLC. <hello@blobfolio.com>"]
+edition = "2018"
+description = "Write to files atomically."
+license = "WTFPL"
+repository = "https://github.com/Blobfolio/write_atomic"
+readme = "README.md"
+exclude = [
+	".github",
+	".gitignore",
+	".righteous-sandbox.json",
+	"doc",
+	"justfile",
+	"release",
+]
+
+[dependencies]
+tempfile = "3.2"
+
+[dependencies.rand]
+version = "0.8"
+features = [ "small_rng" ]
+
+[target.'cfg(unix)'.dependencies]
+libc = ">= 0.2.34"
