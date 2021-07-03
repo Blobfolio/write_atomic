@@ -120,7 +120,7 @@ where P: AsRef<Path> {
 	// Otherwise fall back to the trusty `tempfile`.
 	else {
 		write_fallback(
-			tempfile::Builder::new().tempfile_in(parent)?,
+			BufWriter::new(tempfile::Builder::new().tempfile_in(parent)?),
 			&src,
 			data,
 		)
@@ -284,9 +284,10 @@ fn write_direct_end(file: &mut File, dst: &Path) -> Result<()> {
 ///
 /// For systems where `O_TMPFILE` is unavailable, we can just use the
 /// `tempfile` crate.
-fn write_fallback(mut file: NamedTempFile, dst: &Path, data: &[u8]) -> Result<()> {
+fn write_fallback(mut file: BufWriter<NamedTempFile>, dst: &Path, data: &[u8]) -> Result<()> {
 	file.write_all(data)?;
 	file.flush()?;
+	let file = file.into_inner()?;
 
 	let touched = touch_if(dst)?;
 	match write_fallback_finish(file, dst) {
