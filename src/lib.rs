@@ -61,14 +61,7 @@ write_atomic = "0.1.*"
 
 
 #[cfg(not(target_os = "linux"))] use fallback as linux;
-use rand::{
-	distributions::Alphanumeric,
-	Rng,
-	rngs::SmallRng,
-	SeedableRng,
-};
 use std::{
-	ffi::OsString,
 	fs::File,
 	io::{
 		BufWriter,
@@ -195,25 +188,6 @@ fn copy_ownership(source: &std::fs::Metadata, dest: &File) -> Result<()> {
 	else { Err(Error::last_os_error()) }
 }
 
-/// # Random Tempfile Name
-///
-/// This is similar to how `tempfile` handles it. The resulting name starts
-/// with a dot, ends with `.tmp`, and in between there are 5 random
-/// alphanumeric characters.
-///
-/// To avoid temporary allocations, each random character is inserted into the
-/// `Ostring` one-at-a-time. It's a bit janky-looking, but gets the job done.
-fn random_name() -> OsString {
-	let mut buf = OsString::with_capacity(10);
-	buf.push(".");
-	SmallRng::from_entropy()
-		.sample_iter(&Alphanumeric)
-		.take(5)
-		.for_each(|b| buf.push(unsafe { std::str::from_utf8_unchecked(&[b]) }));
-	buf.push(".tmp");
-	buf
-}
-
 /// # Touch If Needed.
 ///
 /// This creates paths that don't already exist to set the same default
@@ -247,6 +221,8 @@ fn write_direct(mut file: BufWriter<File>, dst: &Path, data: &[u8]) -> Result<()
 
 /// # Finish Write Direct.
 fn write_direct_end(file: &mut File, dst: &Path) -> Result<()> {
+	use rand::RngCore;
+
 	// Copy metadata.
 	copy_metadata(dst, file)?;
 
@@ -257,9 +233,10 @@ fn write_direct_end(file: &mut File, dst: &Path) -> Result<()> {
 
 	// Otherwise we need a a unique location.
 	let mut dst_tmp = dst.to_path_buf();
+	let mut rng = ::rand::thread_rng();
 	for _ in 0..32768 {
 		// Build a new file name.
-		dst_tmp.set_file_name(random_name());
+		dst_tmp.set_file_name(format!(".{:x}.tmp", rng.next_u64()));
 
 		match linux::link_at(file, &dst_tmp) {
 			Ok(()) => return std::fs::rename(&dst_tmp, dst).map_err(|e| {
@@ -317,13 +294,7 @@ mod tests {
 		// temporary directory!
 		let mut path = std::env::temp_dir();
 		if ! path.is_dir() { return; }
-
-		path.push(random_name());
-
-		// Make sure the name is unique.
-		while path.exists() {
-			path.set_file_name(random_name());
-		}
+		path.push("write-atomic-test.txt");
 
 		// Now that we have a path, let's try to write to it!
 		assert!(write_file(&path, b"This is the first write!").is_ok());
