@@ -71,10 +71,7 @@ use rand::{
 use std::{
 	cell::UnsafeCell,
 	ffi::OsString,
-	fs::{
-		File,
-		Metadata,
-	},
+	fs::File,
 	io::{
 		Error,
 		ErrorKind,
@@ -188,7 +185,7 @@ fn copy_metadata(src: &Path, dst: &File) -> Result<()> {
 /// # Copy Ownership.
 ///
 /// On Unix systems, we need to copy ownership in addition to permissions.
-fn copy_ownership(source: &Metadata, dest: &File) -> Result<()> {
+fn copy_ownership(source: &std::fs::Metadata, dest: &File) -> Result<()> {
 	use std::os::unix::{
 		fs::MetadataExt,
 		io::AsRawFd,
