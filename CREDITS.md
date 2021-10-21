@@ -15,7 +15,7 @@ License details for project dependencies are listed below.
 **Used By:**
 
 * [cfg-if 1.0.0](https://github.com/alexcrichton/cfg-if)
-* [libc 0.2.97](https://github.com/rust-lang/libc)
+* [libc 0.2.104](https://github.com/rust-lang/libc)
 * [tempfile 3.2.0](https://github.com/Stebalien/tempfile)
 
 
@@ -443,7 +443,7 @@ limitations under the License.
 
 **Used By:**
 
-* [ppv-lite86 0.2.10](https://github.com/cryptocorrosion/cryptocorrosion)
+* [ppv-lite86 0.2.14](https://github.com/cryptocorrosion/cryptocorrosion)
 
 
 ```
@@ -857,7 +857,7 @@ limitations under the License.
 
 **Used By:**
 
-* [write_atomic 0.1.0](https://github.com/Blobfolio/write_atomic)
+* [write_atomic 0.2.0](https://github.com/Blobfolio/write_atomic)
 
 
 ```

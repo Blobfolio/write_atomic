@@ -28,7 +28,7 @@ Add `write_atomic` to your `dependencies` in `Cargo.toml`, like:
 
 ```text,ignore
 [dependencies]
-write_atomic = "0.1.*"
+write_atomic = "0.2.*"
 ```
 
 */
