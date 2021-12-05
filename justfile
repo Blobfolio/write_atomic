@@ -59,12 +59,7 @@ rustflags   := "-C link-arg=-s"
 
 # Generate CREDITS.
 @credits:
-	# Update CREDITS.html.
-	cargo about \
-		-m "{{ justfile_directory() }}/Cargo.toml" \
-		generate \
-		"{{ justfile_directory() }}/release/credits/about.hbs" > "{{ justfile_directory() }}/CREDITS.md"
-
+	cargo bashman --no-bash --no-man
 	just _fix-chown "{{ justfile_directory() }}/CREDITS.md"
 
 

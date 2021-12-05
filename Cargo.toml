@@ -18,6 +18,12 @@ exclude = [
 	"release",
 ]
 
+[package.metadata.bashman]
+name = "UTC2K"
+bash-dir = "./"
+man-dir = "./"
+credits-dir = "./"
+
 [dependencies]
 rand = "0.8"
 tempfile = "3.2"
