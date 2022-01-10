@@ -26,7 +26,7 @@ credits-dir = "./"
 
 [dependencies]
 rand = "0.8"
-tempfile = "3.2"
+tempfile = "3.3"
 
 [target.'cfg(unix)'.dependencies]
 libc = ">= 0.2.34"
