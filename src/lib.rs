@@ -223,8 +223,6 @@ fn write_direct(mut file: BufWriter<File>, dst: &Path, data: &[u8]) -> Result<()
 
 /// # Finish Write Direct.
 fn write_direct_end(file: &mut File, dst: &Path) -> Result<()> {
-	use rand::RngCore;
-
 	// Copy metadata.
 	copy_metadata(dst, file)?;
 
@@ -235,11 +233,10 @@ fn write_direct_end(file: &mut File, dst: &Path) -> Result<()> {
 
 	// Otherwise we need a a unique location.
 	let mut dst_tmp = dst.to_path_buf();
-	let mut rng = ::rand::thread_rng();
 	for _ in 0..32768 {
 		// Build a new file name.
 		dst_tmp.pop();
-		dst_tmp.push(format!(".{:x}.tmp", rng.next_u64()));
+		dst_tmp.push(format!(".{:x}.tmp", fastrand::u64(..)));
 
 		match linux::link_at(file, &dst_tmp) {
 			Ok(()) => return std::fs::rename(&dst_tmp, dst).map_err(|e| {

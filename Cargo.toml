@@ -1,6 +1,6 @@
 [package]
 name = "write_atomic"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Blobfolio, LLC. <hello@blobfolio.com>"]
 edition = "2021"
 rust-version = "1.56"
@@ -18,9 +18,15 @@ exclude = [
 	"release",
 ]
 
+[package.metadata.bashman]
+name = "UTC2K"
+bash-dir = "./"
+man-dir = "./"
+credits-dir = "./"
+
 [dependencies]
-rand = "0.8"
-tempfile = "3.2"
+fastrand = "1.6"
+tempfile = "3.3"
 
 [target.'cfg(unix)'.dependencies]
 libc = ">= 0.2.34"
