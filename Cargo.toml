@@ -25,7 +25,7 @@ man-dir = "./"
 credits-dir = "./"
 
 [dependencies]
-fastrand = "1.6"
+fastrand = "1.7"
 tempfile = "3.3"
 
 [target.'cfg(unix)'.dependencies]
