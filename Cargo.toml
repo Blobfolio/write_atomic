@@ -1,6 +1,6 @@
 [package]
 name = "write_atomic"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Blobfolio, LLC. <hello@blobfolio.com>"]
 edition = "2021"
 rust-version = "1.56"
@@ -25,8 +25,8 @@ man-dir = "./"
 credits-dir = "./"
 
 [dependencies]
-fastrand = "1.6"
-tempfile = "3.3"
+fastrand = "1.7.*"
+tempfile = "3.3.*"
 
 [target.'cfg(unix)'.dependencies]
 libc = ">= 0.2.34"
