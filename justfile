@@ -21,14 +21,12 @@ pkg_name    := "Write Atomic"
 cargo_dir   := "/tmp/" + pkg_id + "-cargo"
 doc_dir     := justfile_directory() + "/doc"
 
-rustflags   := "-C link-arg=-s"
-
 
 
 # Check Release!
 @check:
 	# First let's build the Rust bit.
-	RUSTFLAGS="{{ rustflags }}" cargo check \
+	cargo check \
 		--release \
 		--target x86_64-unknown-linux-gnu \
 		--all-features \
@@ -50,7 +48,7 @@ rustflags   := "-C link-arg=-s"
 # Clippy.
 @clippy:
 	clear
-	RUSTFLAGS="{{ rustflags }}" cargo clippy \
+	cargo clippy \
 		--release \
 		--all-features \
 		--target x86_64-unknown-linux-gnu \
