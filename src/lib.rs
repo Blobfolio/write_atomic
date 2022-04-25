@@ -33,6 +33,8 @@ write_atomic = "0.2.*"
 
 */
 
+#![deny(unsafe_code)]
+
 #![warn(clippy::filetype_is_file)]
 #![warn(clippy::integer_division)]
 #![warn(clippy::needless_borrow)]
@@ -176,6 +178,7 @@ fn copy_metadata(src: &Path, dst: &File) -> Result<()> {
 }
 
 #[cfg(unix)]
+#[allow(unsafe_code)]
 /// # Copy Ownership.
 ///
 /// On Unix systems, we need to copy ownership in addition to permissions.
