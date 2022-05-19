@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.3](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.3) - 2022-05-19
+
+### Changed
+
+* Update and lock third-party dependency versions
+
+
+
 ## [0.2.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.1) - 2022-01-10
 
 ### Changed
