@@ -4,6 +4,7 @@
 [![crates.io](https://img.shields.io/crates/v/write_atomic.svg)](https://crates.io/crates/write_atomic)
 [![Build Status](https://github.com/Blobfolio/write_atomic/workflows/Build/badge.svg)](https://github.com/Blobfolio/write_atomic/actions)
 [![Dependency Status](https://deps.rs/repo/github/blobfolio/write_atomic/status.svg)](https://deps.rs/repo/github/blobfolio/write_atomic)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/Blobfolio/write_atomic)
 
 **ALPHA**: Note this crate is a work-in-progress and is not yet ready for production use.
 

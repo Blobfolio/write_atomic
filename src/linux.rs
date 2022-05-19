@@ -31,6 +31,7 @@ use std::{
 
 
 
+#[allow(unsafe_code)]
 /// # Create Non-exclusive Tempfile.
 pub(super) fn nonexclusive_tempfile<P>(dir: P) -> Result<File>
 where P: AsRef<Path> {
@@ -41,6 +42,7 @@ where P: AsRef<Path> {
 	}
 }
 
+#[allow(unsafe_code)]
 /// # Link At.
 ///
 /// Attempt to update the file system link for a given file.
