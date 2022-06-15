@@ -124,6 +124,8 @@ where P: AsRef<Path> {
 	}
 }
 
+
+
 /// # Handle Path.
 ///
 /// This checks the path and returns it and its parent, assuming it is valid,
