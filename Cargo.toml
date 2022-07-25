@@ -1,9 +1,9 @@
 [package]
 name = "write_atomic"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["Blobfolio, LLC. <hello@blobfolio.com>"]
 edition = "2021"
-rust-version = "1.56"
+rust-version = "1.61"
 description = "Write to files atomically."
 license = "WTFPL"
 repository = "https://github.com/Blobfolio/write_atomic"
@@ -12,7 +12,6 @@ exclude = [
 	".github",
 	".gitignore",
 	".righteous-sandbox.json",
-	"about.toml",
 	"doc",
 	"justfile",
 	"release",
@@ -25,7 +24,7 @@ man-dir = "./"
 credits-dir = "./"
 
 [dependencies]
-fastrand = "=1.7.0"
+fastrand = ">=1.7.0, <=1.8.0"
 tempfile = "=3.3.0"
 
 [target.'cfg(unix)'.dependencies]
