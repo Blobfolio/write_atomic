@@ -89,6 +89,33 @@ use tempfile::NamedTempFile;
 
 
 
+/// # Atomic Copy File!
+///
+/// This will copy the contents of one file to another, atomically.
+///
+/// It is similar to [`std::fs::copy`], but uses atomic writes and syncs
+/// ownership in addition to permissions (on Unix).
+///
+/// See [`write_file`] for more details about atomicity.
+///
+/// ## Errors
+///
+/// This will bubble up any filesystem-related errors encountered along the
+/// way.
+pub fn copy_file<P>(src: P, dst: P) -> Result<()>
+where P: AsRef<Path> {
+	let src = src.as_ref();
+	let dst = dst.as_ref();
+	let raw = std::fs::read(src)?;
+	write_file(dst, &raw)?;
+
+	if let Ok(file) = File::open(dst) {
+		let _res = copy_metadata(src, &file);
+	}
+
+	Ok(())
+}
+
 /// # Atomic File Write!
 ///
 /// This will write bytes atomically to the specified path, maintaining
@@ -325,7 +352,18 @@ mod tests {
 			b"This is the second write!",
 		);
 
+		// Test copy!
+		let path2 = path.parent()
+			.expect("Missing parent?!")
+			.join("copy-atomic-test.txt");
+		assert!(copy_file(&path, &path2).is_ok());
+		assert_eq!(
+			std::fs::read(&path2).expect("Unable to open file."),
+			b"This is the second write!",
+		);
+
 		// Let's clean up after ourselves.
 		let _res = std::fs::remove_file(path);
+		let _res = std::fs::remove_file(path2);
 	}
 }

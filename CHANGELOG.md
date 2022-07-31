@@ -2,6 +2,14 @@
 
 
 
+## [0.2.5](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.5) - 2022-07-30
+
+### Added
+
+* `copy_file`
+
+
+
 ## [0.2.4](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.4) - 2022-07-24
 
 ### Changed
