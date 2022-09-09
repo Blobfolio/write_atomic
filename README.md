@@ -1,6 +1,7 @@
 # Write Atomic
 
 [![Documentation](https://docs.rs/write_atomic/badge.svg)](https://docs.rs/write_atomic/)
+[![Changelog](https://img.shields.io/crates/v/write_atomic.svg?label=Changelog&color=9cf)](https://github.com/Blobfolio/write_atomic/blob/master/CHANGELOG.md)
 [![crates.io](https://img.shields.io/crates/v/write_atomic.svg)](https://crates.io/crates/write_atomic)
 [![Build Status](https://github.com/Blobfolio/write_atomic/workflows/Build/badge.svg)](https://github.com/Blobfolio/write_atomic/actions)
 [![Dependency Status](https://deps.rs/repo/github/blobfolio/write_atomic/status.svg)](https://deps.rs/repo/github/blobfolio/write_atomic)
