@@ -1,10 +1,13 @@
 /*!
 # Write Atomic
 
-[![Documentation](https://docs.rs/write_atomic/badge.svg)](https://docs.rs/write_atomic/)
-[![Changelog](https://img.shields.io/crates/v/write_atomic.svg?label=Changelog&color=9cf)](https://github.com/Blobfolio/write_atomic/blob/master/CHANGELOG.md)
-[![crates.io](https://img.shields.io/crates/v/write_atomic.svg)](https://crates.io/crates/write_atomic)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/Blobfolio/write_atomic)
+[![docs.rs](https://img.shields.io/docsrs/write_atomic.svg?style=flat-square&label=docs.rs)](https://docs.rs/write_atomic/)
+[![changelog](https://img.shields.io/crates/v/write_atomic.svg?style=flat-square&label=changelog&color=9b59b6)](https://github.com/Blobfolio/write_atomic/blob/master/CHANGELOG.md)<br>
+[![crates.io](https://img.shields.io/crates/v/write_atomic.svg?style=flat-square&label=crates.io)](https://crates.io/crates/write_atomic)
+[![ci](https://img.shields.io/github/workflow/status/Blobfolio/write_atomic/Build.svg?style=flat-square&label=ci)](https://github.com/Blobfolio/write_atomic/actions)
+[![deps.rs](https://deps.rs/repo/github/blobfolio/write_atomic/status.svg?style=flat-square&label=deps.rs)](https://deps.rs/repo/github/blobfolio/write_atomic)<br>
+[![license](https://img.shields.io/badge/license-wtfpl-ff1493?style=flat-square)](https://en.wikipedia.org/wiki/WTFPL)
+[![contributions welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square&label=contributions)](https://github.com/Blobfolio/write_atomic/issues)
 
 **ALPHA**: Note this crate is a work-in-progress and is not yet ready for production use.
 
