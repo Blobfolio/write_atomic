@@ -2,6 +2,15 @@
 
 
 
+## [0.2.6](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.6) - 2022-09-22
+
+### Changed
+
+* Lower MSRV `1.56`
+* Improve docs
+
+
+
 ## [0.2.5](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.5) - 2022-07-30
 
 ### Added
