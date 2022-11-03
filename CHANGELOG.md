@@ -2,6 +2,14 @@
 
 
 
+## [0.2.7](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.7) - 2022-11-03
+
+### Changed
+
+* Remove unneeded borrow
+
+
+
 ## [0.2.6](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.6) - 2022-09-22
 
 ### Changed

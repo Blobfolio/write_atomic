@@ -1,7 +1,7 @@
 # Project Dependencies
     Package:   write_atomic
-    Version:   0.2.6
-    Generated: 2022-09-22 18:21:09 UTC
+    Version:   0.2.7
+    Generated: 2022-11-03 15:04:36 UTC
 
 | Package | Version | Author(s) | License |
 | ---- | ---- | ---- | ---- |
