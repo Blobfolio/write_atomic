@@ -238,7 +238,7 @@ fn copy_ownership(source: &std::fs::Metadata, dst: &File) -> Result<()> {
 fn touch_if(src: &Path) -> Result<bool> {
 	if src.exists() { Ok(false) }
 	else {
-		File::create(&src)?;
+		File::create(src)?;
 		Ok(true)
 	}
 }
