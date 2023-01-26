@@ -2,6 +2,14 @@
 
 
 
+## [0.2.8](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.8) - 2023-01-26
+
+### Changed
+
+* Doc changes (copyright year, etc.)
+
+
+
 ## [0.2.7](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.7) - 2022-11-03
 
 ### Changed
