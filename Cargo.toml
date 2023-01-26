@@ -18,7 +18,7 @@ exclude = [
 ]
 
 [package.metadata.bashman]
-name = "UTC2K"
+name = "write_atomic"
 bash-dir = "./"
 man-dir = "./"
 credits-dir = "./"
