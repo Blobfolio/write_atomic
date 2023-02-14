@@ -2,6 +2,14 @@
 
 
 
+## [0.2.9](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.9) - 2023-02-13
+
+### Changed
+
+* Support `fastrand` up to `1.9.0`
+
+
+
 ## [0.2.8](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.8) - 2023-01-26
 
 ### Changed
