@@ -2,6 +2,14 @@
 
 
 
+## [0.2.10](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.10) - 2023-03-03
+
+### Changed
+
+* Bump `tempfile` to `3.4.0`
+
+
+
 ## [0.2.9](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.9) - 2023-02-13
 
 ### Changed
