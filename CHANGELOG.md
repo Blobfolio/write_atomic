@@ -2,6 +2,16 @@
 
 
 
+## [0.3.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.3.0) - 2023-03-09
+
+### Changed
+
+* Use `tempfile` for all temporary file writes (it now natively supports `O_TMPFILE`);
+* Replace `libc::fchown` with `rustix::fs::fchown` for better parity with `tempfile`'s dependencies;
+* Improve performance of `copy_file`;
+
+
+
 ## [0.2.10](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.10) - 2023-03-03
 
 ### Changed

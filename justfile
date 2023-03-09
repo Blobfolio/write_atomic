@@ -67,9 +67,8 @@ doc_dir     := justfile_directory() + "/doc"
 	# env RUSTUP_PERMIT_COPY_RENAME=true rustup install nightly
 
 	# Make the docs.
-	cargo doc \
+	cargo rustdoc \
 		--release \
-		--no-deps \
 		--target x86_64-unknown-linux-gnu \
 		--target-dir "{{ cargo_dir }}"
 

@@ -1,6 +1,6 @@
 [package]
 name = "write_atomic"
-version = "0.2.10"
+version = "0.3.0"
 authors = ["Blobfolio, LLC. <hello@blobfolio.com>"]
 edition = "2021"
 rust-version = "1.56"
@@ -24,8 +24,8 @@ man-dir = "./"
 credits-dir = "./"
 
 [dependencies]
-fastrand = ">=1.7.0, <=1.9.0"
 tempfile = "=3.4.0"
 
-[target.'cfg(unix)'.dependencies]
-libc = ">= 0.2.34"
+[target.'cfg(unix)'.dependencies.rustix]
+version = "0.36.0" # Match the version required by tempfile.
+features = [ "fs", "process" ]

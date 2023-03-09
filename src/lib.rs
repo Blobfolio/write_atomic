@@ -9,15 +9,11 @@
 [![license](https://img.shields.io/badge/license-wtfpl-ff1493?style=flat-square)](https://en.wikipedia.org/wiki/WTFPL)
 [![contributions welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square&label=contributions)](https://github.com/Blobfolio/write_atomic/issues)
 
-**ALPHA**: Note this crate is a work-in-progress and is not yet ready for production use.
+Write Atomic was originally a stripped-down remake of [`tempfile-fast`](https://crates.io/crates/tempfile-fast), but with the `3.4.0` release of [`tempfile`](https://crates.io/crates/tempfile), it has largely been mooted.
 
-Write Atomic is a stripped-down remake of [`tempfile-fast`](https://crates.io/crates/tempfile-fast), boiling everything down to a single method: [`write_file`].
+(`tempfile` now supports Linux optimizations like `O_TMPFILE` natively.)
 
-Like `tempfile-fast`, bytes will first be written to a temporary file — either `O_TMPFILE` on supporting Linux systems or via the [`tempfile`](https://crates.io/crates/tempfile) crate — then moved the final destination.
-
-When overwriting an existing file, permissions and ownership will be preserved, otherwise the permissions and ownership will default to the same values you'd get if using [`std::fs::File::create`].
-
-Because there is just a single [`write_file`] method, this crate is only really suitable in cases where you have the path and all the bytes you want to write ready to go. If you need more granular `Read`/`Seek`/`Write` support, use `tempfile-fast` instead.
+That said, one might still enjoy the ergonomic single-shot nature of Write Atomic's [`write_file`] and [`copy_file`] methods, as well as their permission/ownership-syncing behaviors, and so it lives on!
 
 ## Examples
 
@@ -32,7 +28,7 @@ Add `write_atomic` to your `dependencies` in `Cargo.toml`, like:
 
 ```text,ignore
 [dependencies]
-write_atomic = "0.2.*"
+write_atomic = "0.3.*"
 ```
 
 */
@@ -61,19 +57,8 @@ write_atomic = "0.2.*"
 	unused_import_braces,
 )]
 
-#![allow(
-	clippy::module_name_repetitions,
-	clippy::redundant_pub_crate,
-)]
 
 
-
-#[cfg(target_os = "linux")]      mod linux;
-#[cfg(not(target_os = "linux"))] mod fallback;
-
-
-
-#[cfg(not(target_os = "linux"))] use fallback as linux;
 use std::{
 	fs::File,
 	io::{
@@ -92,12 +77,13 @@ use tempfile::NamedTempFile;
 
 
 
-/// # Atomic Copy File!
+/// # Atomic File Copy!
 ///
 /// This will copy the contents of one file to another, atomically.
 ///
-/// It is similar to [`std::fs::copy`], but uses atomic writes and syncs
-/// ownership in addition to permissions (on Unix).
+/// Under the hood, this uses [`std::fs::copy`] to copy the file to a temporary
+/// location. It then syncs the file permissions — and on Unix, the owner/group
+/// — before moving it to the final destination.
 ///
 /// See [`write_file`] for more details about atomicity.
 ///
@@ -108,15 +94,18 @@ use tempfile::NamedTempFile;
 pub fn copy_file<P>(src: P, dst: P) -> Result<()>
 where P: AsRef<Path> {
 	let src = src.as_ref();
-	let dst = dst.as_ref();
-	let raw = std::fs::read(src)?;
-	write_file(dst, &raw)?;
+	let (dst, parent) = check_path(dst)?;
 
-	if let Ok(file) = File::open(dst) {
-		let _res = copy_metadata(src, &file);
+	let file = tempfile::Builder::new().tempfile_in(parent)?;
+	std::fs::copy(src, &file)?;
+
+	let touched = touch_if(&dst)?;
+	if let Err(e) = write_finish(file, &dst) {
+		// If we created the file earlier, try to remove it.
+		if touched { let _res = std::fs::remove_file(dst); }
+		Err(e)
 	}
-
-	Ok(())
+	else { Ok(()) }
 }
 
 /// # Atomic File Write!
@@ -124,10 +113,6 @@ where P: AsRef<Path> {
 /// This will write bytes atomically to the specified path, maintaining
 /// permissions and ownership if it already exists, or creating it anew using
 /// the same default permissions and ownership [`std::fs::File::create`] would.
-///
-/// Atomicity is achieved by first writing the content to a temporary location.
-/// On most Linux systems, this will use `O_TMPFILE`; for other systems, the
-/// [`tempfile`] crate will be used instead.
 ///
 /// ## Examples
 ///
@@ -143,20 +128,20 @@ where P: AsRef<Path> {
 /// way.
 pub fn write_file<P>(src: P, data: &[u8]) -> Result<()>
 where P: AsRef<Path> {
-	let (src, parent) = check_path(src)?;
+	let (dst, parent) = check_path(src)?;
 
-	// Write via O_TMPFILE if we can.
-	if let Ok(file) = linux::nonexclusive_tempfile(&parent) {
-		write_direct(BufWriter::new(file), &src, data)
+	let mut file = BufWriter::new(tempfile::Builder::new().tempfile_in(parent)?);
+	file.write_all(data)?;
+	file.flush()?;
+	let file = file.into_inner()?;
+
+	let touched = touch_if(&dst)?;
+	if let Err(e) = write_finish(file, &dst) {
+		// If we created the file earlier, try to remove it.
+		if touched { let _res = std::fs::remove_file(dst); }
+		Err(e)
 	}
-	// Otherwise fall back to the trusty `tempfile`.
-	else {
-		write_fallback(
-			BufWriter::new(tempfile::Builder::new().tempfile_in(parent)?),
-			&src,
-			data,
-		)
-	}
+	else { Ok(()) }
 }
 
 
@@ -219,16 +204,16 @@ fn copy_metadata(src: &Path, dst: &File) -> Result<()> {
 #[allow(unsafe_code)]
 /// # Copy Ownership.
 ///
-/// On Unix systems, we need to copy ownership in addition to permissions.
-fn copy_ownership(source: &std::fs::Metadata, dst: &File) -> Result<()> {
-	use std::os::unix::{
-		fs::MetadataExt,
-		io::AsRawFd,
-	};
+/// Copy the owner/group details from `src` to `dst`.
+fn copy_ownership(src: &std::fs::Metadata, dst: &File) -> Result<()> {
+	use rustix::process::{Gid, Uid};
+	use std::os::unix::fs::MetadataExt;
 
-	let fd = dst.as_raw_fd();
-	if 0 == unsafe { libc::fchown(fd, source.uid(), source.gid()) } { Ok(()) }
-	else { Err(Error::last_os_error()) }
+	rustix::fs::fchown(
+		dst,
+		Some(unsafe { Uid::from_raw(src.uid()) }),
+		Some(unsafe { Gid::from_raw(src.gid()) }),
+	).map_err(Into::into)
 }
 
 /// # Touch If Needed.
@@ -243,82 +228,10 @@ fn touch_if(src: &Path) -> Result<bool> {
 	}
 }
 
-/// # Write Direct.
+/// # Finish Write.
 ///
-/// This is an optimized file write for modern Linux installs.
-fn write_direct(mut file: BufWriter<File>, dst: &Path, data: &[u8]) -> Result<()> {
-	file.write_all(data)?;
-	file.flush()?;
-	let mut file = file.into_inner()?;
-
-	let touched = touch_if(dst)?;
-	match write_direct_end(&mut file, dst) {
-		Ok(()) => Ok(()),
-		Err(e) => {
-			// If we created the file earlier, try to remove it.
-			if touched { let _res = std::fs::remove_file(dst); }
-			Err(e)
-		}
-	}
-}
-
-/// # Finish Write Direct.
-fn write_direct_end(file: &mut File, dst: &Path) -> Result<()> {
-	// Copy metadata.
-	copy_metadata(dst, file)?;
-
-	// If linking works right off the bat, hurray!
-	if linux::link_at(file, dst).is_ok() {
-		return Ok(());
-	}
-
-	// Otherwise we need a a unique location.
-	let mut dst_tmp = dst.to_path_buf();
-	for _ in 0..32768 {
-		// Build a new file name.
-		dst_tmp.pop();
-		dst_tmp.push(format!(".{:x}.tmp", fastrand::u64(..)));
-
-		match linux::link_at(file, &dst_tmp) {
-			Ok(()) => return std::fs::rename(&dst_tmp, dst).map_err(|e| {
-				// That didn't work; attempt cleanup.
-				let _res = std::fs::remove_file(&dst_tmp);
-				e
-			}),
-			Err(e) => {
-				// Collisions just require another go; for other errors, we
-				// should abort.
-				if ErrorKind::AlreadyExists != e.kind() { return Err(e); }
-			}
-		};
-	}
-
-	// If we're here, we've failed.
-	Err(Error::new(ErrorKind::Other, "Couldn't create a temporary file."))
-}
-
-/// # Write Fallback.
-///
-/// For systems where `O_TMPFILE` is unavailable, we can just use the
-/// `tempfile` crate.
-fn write_fallback(mut file: BufWriter<NamedTempFile>, dst: &Path, data: &[u8]) -> Result<()> {
-	file.write_all(data)?;
-	file.flush()?;
-	let file = file.into_inner()?;
-
-	let touched = touch_if(dst)?;
-	match write_fallback_finish(file, dst) {
-		Ok(()) => Ok(()),
-		Err(e) => {
-			// If we created the file earlier, try to remove it.
-			if touched { let _res = std::fs::remove_file(dst); }
-			Err(e)
-		}
-	}
-}
-
-/// # Finish Write Fallback.
-fn write_fallback_finish(file: NamedTempFile, dst: &Path) -> Result<()> {
+/// This attempts to copy the metadata, then persist the tempfile.
+fn write_finish(file: NamedTempFile, dst: &Path) -> Result<()> {
 	copy_metadata(dst, file.as_file())
 		.and_then(|_| file.persist(dst).map(|_| ()).map_err(|e| e.error))
 }

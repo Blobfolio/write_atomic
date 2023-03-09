@@ -8,15 +8,11 @@
 [![license](https://img.shields.io/badge/license-wtfpl-ff1493?style=flat-square)](https://en.wikipedia.org/wiki/WTFPL)
 [![contributions welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square&label=contributions)](https://github.com/Blobfolio/write_atomic/issues)
 
-**ALPHA**: Note this crate is a work-in-progress and is not yet ready for production use.
+Write Atomic was originally a stripped-down remake of [`tempfile-fast`](https://crates.io/crates/tempfile-fast), but with the `3.4.0` release of [`tempfile`](https://crates.io/crates/tempfile), it has largely been mooted.
 
-Write Atomic is a stripped-down remake of [`tempfile-fast`](https://crates.io/crates/tempfile-fast), boiling everything down to a single method: [`write_file`].
+(`tempfile` now supports Linux optimizations like `O_TMPFILE` natively.)
 
-Like `tempfile-fast`, bytes will first be written to a temporary file — either `O_TMPFILE` on supporting Linux systems or via the [`tempfile`](https://crates.io/crates/tempfile) crate — then moved the final destination.
-
-When overwriting an existing file, permissions and ownership will be preserved, otherwise the permissions and ownership will default to the same values you'd get if using `std::fs::File::create`.
-
-Because there is just a single [`write_file`] method, this crate is only really suitable in cases where you have the path and all the bytes you want to write ready to go. If you need more granular `Read`/`Seek`/`Write` support, use `tempfile-fast` instead.
+That said, one might still enjoy the ergonomic single-shot nature of Write Atomic's `write_file` and `copy_file` methods, as well as their permission/ownership-syncing behaviors, and so it lives on!
 
 
 
@@ -35,7 +31,7 @@ Add `write_atomic` to your `dependencies` in `Cargo.toml`, like:
 
 ```
 [dependencies]
-write_atomic = "0.2.*"
+write_atomic = "0.3.*"
 ```
 
 
