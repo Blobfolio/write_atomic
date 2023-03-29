@@ -24,8 +24,8 @@ man-dir = "./"
 credits-dir = "./"
 
 [dependencies]
-tempfile = "=3.4.0"
+tempfile = "3.5.0"
 
 [target.'cfg(unix)'.dependencies.rustix]
-version = "0.36.0" # Match the version required by tempfile.
+version = "0.37.1"
 features = [ "fs", "process" ]
