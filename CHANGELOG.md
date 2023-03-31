@@ -2,6 +2,14 @@
 
 
 
+## [0.3.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.3.1) - 2023-03-31
+
+### Changed
+
+* Bump `tempfile` to `3.5.0`
+* Bump `rustix` to `0.37`
+
+
 ## [0.3.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.3.0) - 2023-03-09
 
 ### Changed
