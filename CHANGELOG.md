@@ -2,6 +2,12 @@
 
 
 
+## [0.3.2](https://github.com/Blobfolio/write_atomic/releases/tag/v0.3.2) - 2023-06-01
+
+This release improves the unit testing coverage, but has no user-facing changes.
+
+
+
 ## [0.3.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.3.1) - 2023-03-31
 
 ### Changed
