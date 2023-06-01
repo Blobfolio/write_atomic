@@ -23,16 +23,6 @@ doc_dir     := justfile_directory() + "/doc"
 
 
 
-# Check Release!
-@check:
-	# First let's build the Rust bit.
-	cargo check \
-		--release \
-		--target x86_64-unknown-linux-gnu \
-		--all-features \
-		--target-dir "{{ cargo_dir }}"
-
-
 # Clean Cargo crap.
 @clean:
 	# Most things go here.
@@ -81,6 +71,10 @@ doc_dir     := justfile_directory() + "/doc"
 # Unit tests!
 @test:
 	clear
+	cargo test \
+		--all-features \
+		--target x86_64-unknown-linux-gnu \
+		--target-dir "{{ cargo_dir }}"
 	cargo test \
 		--release \
 		--all-features \
