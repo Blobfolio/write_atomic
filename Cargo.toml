@@ -27,5 +27,5 @@ credits-dir = "./"
 tempfile = "3.7.0"
 
 [target.'cfg(unix)'.dependencies.rustix]
-version = "0.37.1"
+version = "0.38"
 features = [ "fs", "process" ]
