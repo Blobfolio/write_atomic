@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [0.4.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.4.0) - 2023-07-24
+
+### Changed
+
+* Bump `tempfile` to `3.7.0`
+* Bump `rustix` to `0.38`
+* Bump MSRV to `1.63`
+
+
 
 ## [0.3.2](https://github.com/Blobfolio/write_atomic/releases/tag/v0.3.2) - 2023-06-01
 
