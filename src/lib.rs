@@ -21,16 +21,6 @@ That said, one might still enjoy the ergonomic single-shot nature of Write Atomi
 // One line is all it takes:
 write_atomic::write_file("/path/to/my-file.txt", b"Some data!").unwrap();
 ```
-
-## Installation
-
-Add `write_atomic` to your `dependencies` in `Cargo.toml`, like:
-
-```text,ignore
-[dependencies]
-write_atomic = "0.4.*"
-```
-
 */
 
 #![deny(unsafe_code)]
