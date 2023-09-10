@@ -52,7 +52,6 @@ write_atomic::write_file("/path/to/my-file.txt", b"Some data!").unwrap();
 use std::{
 	fs::File,
 	io::{
-		BufWriter,
 		Error,
 		ErrorKind,
 		Result,
@@ -120,10 +119,9 @@ pub fn write_file<P>(src: P, data: &[u8]) -> Result<()>
 where P: AsRef<Path> {
 	let (dst, parent) = check_path(src)?;
 
-	let mut file = BufWriter::new(tempfile::Builder::new().tempfile_in(parent)?);
+	let mut file = tempfile::Builder::new().tempfile_in(parent)?;
 	file.write_all(data)?;
 	file.flush()?;
-	let file = file.into_inner()?;
 
 	let touched = touch_if(&dst)?;
 	if let Err(e) = write_finish(file, &dst) {
