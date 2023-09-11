@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [0.4.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.4.1) - 2023-09-10
+
+### Changed
+
+* Remove unnecessary `BufWriter` wrapper
+
+
+
 ## [0.4.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.4.0) - 2023-07-24
 
 ### Changed
