@@ -221,7 +221,7 @@ fn touch_if(src: &Path) -> Result<bool> {
 /// This attempts to copy the metadata, then persist the tempfile.
 fn write_finish(file: NamedTempFile, dst: &Path) -> Result<()> {
 	copy_metadata(dst, file.as_file())
-		.and_then(|_| file.persist(dst).map(|_| ()).map_err(|e| e.error))
+		.and_then(|()| file.persist(dst).map(|_| ()).map_err(|e| e.error))
 }
 
 
