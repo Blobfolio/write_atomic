@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [0.5.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.5.0) - 2023-10-05
+
+### Changed
+
+* Bump MSRV `1.73.0`
+* Drop `rustix` in favor of stable `std::os::unix::fs::fchown`
+* Direct library code is now 100% safe
+
+
+
 ## [0.4.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.4.1) - 2023-09-10
 
 ### Changed
