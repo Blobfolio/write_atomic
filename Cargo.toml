@@ -3,7 +3,7 @@ name = "write_atomic"
 version = "0.4.1"
 authors = ["Blobfolio, LLC. <hello@blobfolio.com>"]
 edition = "2021"
-rust-version = "1.63"
+rust-version = "1.73"
 description = "Write to files atomically."
 license = "WTFPL"
 repository = "https://github.com/Blobfolio/write_atomic"
@@ -25,7 +25,3 @@ credits-dir = "./"
 
 [dependencies]
 tempfile = "3.7.0"
-
-[target.'cfg(unix)'.dependencies.rustix]
-version = "0.38"
-features = [ "fs", "process" ]

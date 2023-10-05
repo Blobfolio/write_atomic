@@ -23,7 +23,7 @@ write_atomic::write_file("/path/to/my-file.txt", b"Some data!").unwrap();
 ```
 */
 
-#![deny(unsafe_code)]
+#![forbid(unsafe_code)]
 
 #![warn(
 	clippy::filetype_is_file,
@@ -189,19 +189,12 @@ fn copy_metadata(src: &Path, dst: &File) -> Result<()> {
 }
 
 #[cfg(unix)]
-#[allow(unsafe_code)]
 /// # Copy Ownership.
 ///
 /// Copy the owner/group details from `src` to `dst`.
 fn copy_ownership(src: &std::fs::Metadata, dst: &File) -> Result<()> {
-	use rustix::process::{Gid, Uid};
 	use std::os::unix::fs::MetadataExt;
-
-	rustix::fs::fchown(
-		dst,
-		Some(unsafe { Uid::from_raw(src.uid()) }),
-		Some(unsafe { Gid::from_raw(src.gid()) }),
-	).map_err(Into::into)
+	std::os::unix::fs::fchown(dst, Some(src.uid()), Some(src.gid())).map_err(Into::into)
 }
 
 /// # Touch If Needed.
