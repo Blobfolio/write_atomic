@@ -41,7 +41,6 @@ doc_dir     := justfile_directory() + "/doc"
 	cargo clippy \
 		--release \
 		--all-features \
-		--target x86_64-unknown-linux-gnu \
 		--target-dir "{{ cargo_dir }}"
 
 
@@ -59,12 +58,11 @@ doc_dir     := justfile_directory() + "/doc"
 	# Make the docs.
 	cargo rustdoc \
 		--release \
-		--target x86_64-unknown-linux-gnu \
 		--target-dir "{{ cargo_dir }}"
 
 	# Move the docs and clean up ownership.
 	[ ! -d "{{ doc_dir }}" ] || rm -rf "{{ doc_dir }}"
-	mv "{{ cargo_dir }}/x86_64-unknown-linux-gnu/doc" "{{ justfile_directory() }}"
+	mv "{{ cargo_dir }}/doc" "{{ justfile_directory() }}"
 	just _fix-chown "{{ doc_dir }}"
 
 
@@ -73,12 +71,10 @@ doc_dir     := justfile_directory() + "/doc"
 	clear
 	cargo test \
 		--all-features \
-		--target x86_64-unknown-linux-gnu \
 		--target-dir "{{ cargo_dir }}"
 	cargo test \
 		--release \
 		--all-features \
-		--target x86_64-unknown-linux-gnu \
 		--target-dir "{{ cargo_dir }}"
 
 
