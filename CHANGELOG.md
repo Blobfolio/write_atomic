@@ -2,6 +2,15 @@
 
 
 
+## [0.5.2](https://github.com/Blobfolio/write_atomic/releases/tag/v0.5.2) - 2024-11-28
+
+### Changed
+
+* Bump `tempfile` to `3.14`
+* Miscellaneous code cleanup and lints
+
+
+
 ## [0.5.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.5.1) - 2024-09-05
 
 ### Changed

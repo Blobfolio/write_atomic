@@ -26,7 +26,7 @@ write_atomic::write_file("/path/to/my-file.txt", b"Some data!").unwrap();
 #![forbid(unsafe_code)]
 
 #![deny(
-	// TODO: clippy::allow_attributes_without_reason,
+	clippy::allow_attributes_without_reason,
 	clippy::correctness,
 	unreachable_pub,
 )]
@@ -38,7 +38,7 @@ write_atomic::write_file("/path/to/my-file.txt", b"Some data!").unwrap();
 	clippy::perf,
 	clippy::style,
 
-	// TODO: clippy::allow_attributes,
+	clippy::allow_attributes,
 	clippy::clone_on_ref_ptr,
 	clippy::create_dir,
 	clippy::filetype_is_file,
