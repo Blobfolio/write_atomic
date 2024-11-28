@@ -21,4 +21,4 @@ exclude = [
 name = "write_atomic"
 
 [dependencies]
-tempfile = "3.7.0"
+tempfile = "3.14.0"
