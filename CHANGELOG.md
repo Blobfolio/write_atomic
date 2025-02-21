@@ -2,6 +2,14 @@
 
 
 
+## [0.5.3](https://github.com/Blobfolio/write_atomic/releases/tag/v0.5.3) - 2025-02-20
+
+### Changed
+
+* Miscellaneous code cleanup and lints
+
+
+
 ## [0.5.2](https://github.com/Blobfolio/write_atomic/releases/tag/v0.5.2) - 2024-11-28
 
 ### Changed
