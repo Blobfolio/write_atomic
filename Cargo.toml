@@ -1,6 +1,6 @@
 [package]
 name = "write_atomic"
-version = "0.5.2"
+version = "0.5.3"
 authors = ["Josh Stoik <josh@blobfolio.com>"]
 edition = "2021"
 rust-version = "1.73"

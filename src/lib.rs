@@ -219,7 +219,7 @@ fn copy_metadata(src: &Path, dst: &File) -> Result<()> {
 /// Copy the owner/group details from `src` to `dst`.
 fn copy_ownership(src: &std::fs::Metadata, dst: &File) -> Result<()> {
 	use std::os::unix::fs::MetadataExt;
-	std::os::unix::fs::fchown(dst, Some(src.uid()), Some(src.gid())).map_err(Into::into)
+	std::os::unix::fs::fchown(dst, Some(src.uid()), Some(src.gid()))
 }
 
 /// # Touch If Needed.
