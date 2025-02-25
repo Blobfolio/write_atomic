@@ -31,5 +31,5 @@ Add `write_atomic` to your `dependencies` in `Cargo.toml`, like:
 
 ```
 [dependencies]
-write_atomic = "0.5.*"
+write_atomic = "0.6.*"
 ```
