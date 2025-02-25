@@ -2,6 +2,15 @@
 
 
 
+## [0.6.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.6.0) - 2025-02-24
+
+### Changed
+
+* Bump MSRV to `1.85`
+* Bump Rust edition to 2024
+
+
+
 ## [0.5.3](https://github.com/Blobfolio/write_atomic/releases/tag/v0.5.3) - 2025-02-20
 
 ### Changed
