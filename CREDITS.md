@@ -1,7 +1,7 @@
 # Project Dependencies
     Package:   write_atomic
-    Version:   0.5.3
-    Generated: 2025-02-21 02:52:37 UTC
+    Version:   0.6.0
+    Generated: 2025-02-25 05:23:15 UTC
 
 | Package | Version | Author(s) | License |
 | ---- | ---- | ---- | ---- |
@@ -12,7 +12,7 @@
 | [_bitflags_](https://github.com/bitflags/bitflags) | 2.8.0 | The Rust Project Developers | MIT OR Apache-2.0 |
 | [_errno_](https://github.com/lambda-fairy/rust-errno) | 0.3.10 | [Chris Wong](mailto:lambda.fairy@gmail.com) | MIT OR Apache-2.0 |
 | [_getrandom_](https://github.com/rust-random/getrandom) | 0.3.1 | The Rand Project Developers | MIT OR Apache-2.0 |
-| [_libc_](https://github.com/rust-lang/libc) | 0.2.169 | The Rust Project Developers | MIT OR Apache-2.0 |
+| [_libc_](https://github.com/rust-lang/libc) | 0.2.170 | The Rust Project Developers | MIT OR Apache-2.0 |
 | [_linux-raw-sys_](https://github.com/sunfishcode/linux-raw-sys) | 0.4.15 | [Dan Gohman](mailto:dev@sunfishcode.online) | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT |
 | [_rustix_](https://github.com/bytecodealliance/rustix) | 0.38.44 | [Dan Gohman](mailto:dev@sunfishcode.online) and [Jakub Konka](mailto:kubkon@jakubkonka.com) | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT |
 | [_wasi_](https://github.com/bytecodealliance/wasi-rs) | 0.13.3+wasi-0.2.2 | The Cranelift Project Developers | Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT |
