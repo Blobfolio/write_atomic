@@ -5,7 +5,7 @@
 [![changelog](https://img.shields.io/crates/v/write_atomic.svg?style=flat-square&label=changelog&color=9b59b6)](https://github.com/Blobfolio/write_atomic/blob/master/CHANGELOG.md)<br>
 [![crates.io](https://img.shields.io/crates/v/write_atomic.svg?style=flat-square&label=crates.io)](https://crates.io/crates/write_atomic)
 [![ci](https://img.shields.io/github/actions/workflow/status/Blobfolio/write_atomic/ci.yaml?style=flat-square&label=ci)](https://github.com/Blobfolio/write_atomic/actions)
-[![deps.rs](https://deps.rs/repo/github/blobfolio/write_atomic/status.svg?style=flat-square&label=deps.rs)](https://deps.rs/repo/github/blobfolio/write_atomic)<br>
+[![deps.rs](https://deps.rs/crate/write_atomic/latest/status.svg?style=flat-square&label=deps.rs)](https://deps.rs/crate/write_atomic/)<br>
 [![license](https://img.shields.io/badge/license-wtfpl-ff1493?style=flat-square)](https://en.wikipedia.org/wiki/WTFPL)
 [![contributions welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square&label=contributions)](https://github.com/Blobfolio/write_atomic/issues)
 
