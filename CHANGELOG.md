@@ -2,6 +2,14 @@
 
 
 
+## [0.7.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.7.0) - TBD
+
+### Changed
+
+* Bump MSRV to `1.87`
+
+
+
 ## [0.6.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.6.0) - 2025-02-24
 
 ### Changed
