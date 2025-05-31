@@ -74,6 +74,7 @@ write_atomic::write_file("/path/to/my-file.txt", b"Some data!").unwrap();
 
 
 
+use filetime::FileTime;
 use std::{
 	fs::File,
 	io::{
@@ -89,17 +90,32 @@ use std::{
 };
 use tempfile::NamedTempFile;
 
+// Re-export both dependencies.
+pub use filetime;
+pub use tempfile;
+
 
 
 /// # Atomic File Copy!
 ///
-/// This will copy the contents of one file to another, atomically.
+/// Copy the contents — and permissions, ownership, and access/modification
+/// times — of one file to another, atomically.
 ///
-/// Under the hood, this uses [`std::fs::copy`] to copy the file to a temporary
-/// location. It then syncs the file permissions — and on Unix, the owner/group
-/// — before moving it to the final destination.
+/// Similar to [`write_file`], this method first copies everything over to a
+/// temporary file before moving it into place.
 ///
-/// See [`write_file`] for more details about atomicity.
+/// ## Examples
+///
+/// ```no_run
+/// // It's just one line:
+/// match write_atomic::copy_file("/some/source.jpg", "/some/copy.jpg") {
+///     // The file was copied!
+///     Ok(()) => {},
+///
+///     // There was an std::io::Error.
+///     Err(e) => panic!("{e}"),
+/// };
+/// ```
 ///
 /// ## Errors
 ///
@@ -112,44 +128,52 @@ where P: AsRef<Path> {
 
 	let file = tempfile::Builder::new().tempfile_in(parent)?;
 	std::fs::copy(src, &file)?;
-
-	let touched = touch_if(&dst)?;
-	if let Err(e) = write_finish(file, &dst) {
-		// If we created the file earlier, try to remove it.
-		if touched { let _res = std::fs::remove_file(dst); }
-		Err(e)
-	}
-	else { Ok(()) }
+	copy_metadata(src, file.as_file(), true)?;
+	write_finish(file, &dst)
 }
 
 /// # Atomic File Write!
 ///
-/// This will write bytes atomically to the specified path, maintaining
-/// permissions and ownership if it already exists, or creating it anew using
-/// the same default permissions and ownership [`std::fs::File::create`] would.
+/// Write content to a file, atomically.
+///
+/// Under the hood, this method creates a temporary file to hold all the
+/// changes, then moves that file into place once everything is good to go.
+///
+/// If a file already exists at the destination path, this method will (try
+/// to) preserve its permissions and ownership.
+///
+/// If not, it will simply create it.
+///
+/// Unlike [`File::create`](std::fs::File::create), this method will also
+/// attempt to create any missing parent directories.
 ///
 /// ## Examples
 ///
 /// ```no_run
 /// // It's just one line:
-/// write_atomic::write_file("/path/to/my/file.txt", b"Some data!")
-///     .unwrap();
+/// match write_atomic::write_file("/path/to/my/file.txt", b"Some data!") {
+///     // The file was saved!
+///     Ok(()) => {},
+///
+///     // There was an std::io::Error.
+///     Err(e) => panic!("{e}"),
+/// };
 /// ```
 ///
 /// ## Errors
 ///
 /// This will bubble up any filesystem-related errors encountered along the
 /// way.
-pub fn write_file<P>(src: P, data: &[u8]) -> Result<()>
+pub fn write_file<P>(dst: P, data: &[u8]) -> Result<()>
 where P: AsRef<Path> {
-	let (dst, parent) = check_path(src)?;
+	let (dst, parent) = check_path(dst)?;
 
 	let mut file = tempfile::Builder::new().tempfile_in(parent)?;
 	file.write_all(data)?;
 	file.flush()?;
 
 	let touched = touch_if(&dst)?;
-	if let Err(e) = write_finish(file, &dst) {
+	if let Err(e) = copy_metadata(&dst, file.as_file(), false).and_then(|()| write_finish(file, &dst)) {
 		// If we created the file earlier, try to remove it.
 		if touched { let _res = std::fs::remove_file(dst); }
 		Err(e)
@@ -198,7 +222,7 @@ where P: AsRef<Path> {
 ///
 /// Make sure we don't lose details like permissions, ownership, etc., when
 /// replacing an existing file.
-fn copy_metadata(src: &Path, dst: &File) -> Result<()> {
+fn copy_metadata(src: &Path, dst: &File, times: bool) -> Result<()> {
 	let metadata = match src.metadata() {
 		Ok(metadata) => metadata,
 		Err(ref e) if ErrorKind::NotFound == e.kind() => return Ok(()),
@@ -209,6 +233,13 @@ fn copy_metadata(src: &Path, dst: &File) -> Result<()> {
 
 	#[cfg(unix)]
 	copy_ownership(&metadata, dst)?;
+
+	// Copy times?
+	if times {
+		let atime = FileTime::from_last_access_time(&metadata);
+		let mtime = FileTime::from_last_modification_time(&metadata);
+		let _res = filetime::set_file_handle_times(dst, Some(atime), Some(mtime));
+	}
 
 	Ok(())
 }
@@ -226,20 +257,19 @@ fn copy_ownership(src: &std::fs::Metadata, dst: &File) -> Result<()> {
 ///
 /// This creates paths that don't already exist to set the same default
 /// permissions and ownerships the standard library would.
-fn touch_if(src: &Path) -> Result<bool> {
-	if src.exists() { Ok(false) }
+fn touch_if(dst: &Path) -> Result<bool> {
+	if dst.exists() { Ok(false) }
 	else {
-		File::create(src)?;
+		File::create(dst)?;
 		Ok(true)
 	}
 }
 
 /// # Finish Write.
 ///
-/// This attempts to copy the metadata, then persist the tempfile.
+/// Persist the temporary file.
 fn write_finish(file: NamedTempFile, dst: &Path) -> Result<()> {
-	copy_metadata(dst, file.as_file())
-		.and_then(|()| file.persist(dst).map(|_| ()).map_err(|e| e.error))
+	file.persist(dst).map(|_| ()).map_err(|e| e.error)
 }
 
 
@@ -247,6 +277,85 @@ fn write_finish(file: NamedTempFile, dst: &Path) -> Result<()> {
 #[cfg(test)]
 mod tests {
 	use super::*;
+	use std::fs::Metadata;
+
+	#[cfg(unix)]
+	/// # Get User/Group IDs.
+	fn user_group(meta: &Metadata) -> (u32, u32) {
+		use std::os::unix::fs::MetadataExt;
+		(meta.uid(), meta.gid())
+	}
+
+	#[test]
+	fn test_file_times() {
+		let mut dst = std::env::temp_dir();
+		if ! dst.is_dir() { return; }
+		dst.push("LICENSE-copy.txt");
+
+		// Pull the source's details.
+		let src = std::fs::canonicalize("./LICENSE")
+			.expect("Missing LICENSE file?");
+		let meta1 = std::fs::metadata(&src)
+			.expect("Unable to read LICENSE metadata.");
+
+		// Copy it and pull the destination's details.
+		assert!(copy_file(&src, &dst).is_ok());
+		let meta2 = std::fs::metadata(&dst)
+			.expect("Unable to read LICENSE-copy.txt metadata.");
+
+		// Check sameness!
+		assert_eq!(
+			meta1.permissions(),
+			meta2.permissions(),
+			"Copied permissions not equal.",
+		);
+
+		#[cfg(unix)]
+		assert_eq!(
+			user_group(&meta1),
+			user_group(&meta2),
+			"Copied ownership not equal.",
+		);
+
+		assert_eq!(
+			FileTime::from_last_modification_time(&meta1),
+			FileTime::from_last_modification_time(&meta2),
+			"Copied mtimes not equal.",
+		);
+
+		// Let's rewrite to the same destination and re-verify the
+		// details. (`write_file` only syncs permissions if overwriting.)
+		write_file(&dst, b"Testing a rewrite!").expect("Write failed.");
+		let meta2 = std::fs::metadata(&dst)
+			.expect("Unable to read LICENSE-copy.txt metadata.");
+
+		// Make sure we're reading something new. Haha.
+		assert_eq!(meta2.len(), 18, "Unexpected file length.");
+
+		// Check sameness!
+		assert_eq!(
+			meta1.permissions(),
+			meta2.permissions(),
+			"Copied permissions not equal.",
+		);
+
+		#[cfg(unix)]
+		assert_eq!(
+			user_group(&meta1),
+			user_group(&meta2),
+			"Copied ownership not equal.",
+		);
+
+		// This time around the times should be different!
+		assert_ne!(
+			FileTime::from_last_modification_time(&meta1),
+			FileTime::from_last_modification_time(&meta2),
+			"Mtimes shouldn't match anymore!",
+		);
+
+		// Remove the copy.
+		let _res = std::fs::remove_file(dst);
+	}
 
 	#[test]
 	fn test_write() {

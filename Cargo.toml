@@ -21,4 +21,5 @@ exclude = [
 name = "write_atomic"
 
 [dependencies]
-tempfile = "3.17.0"
+filetime = "0.2.*"
+tempfile = "3.20.0"
