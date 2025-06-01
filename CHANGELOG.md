@@ -2,7 +2,7 @@
 
 
 
-## [0.7.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.7.0) - TBD
+## [0.7.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.7.0) - 2025-05-31
 
 ### New
 
