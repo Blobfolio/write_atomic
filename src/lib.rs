@@ -76,7 +76,10 @@ write_atomic::write_file("/path/to/my-file.txt", b"Some data!").unwrap();
 
 use filetime::FileTime;
 use std::{
-	fs::File,
+	fs::{
+		File,
+		Metadata,
+	},
 	io::{
 		Error,
 		ErrorKind,
@@ -89,6 +92,9 @@ use std::{
 	},
 };
 use tempfile::NamedTempFile;
+
+#[cfg(unix)]
+use std::os::unix::fs::MetadataExt;
 
 // Re-export both dependencies.
 pub use filetime;
@@ -128,7 +134,8 @@ where P: AsRef<Path> {
 
 	let file = tempfile::Builder::new().tempfile_in(parent)?;
 	std::fs::copy(src, &file)?;
-	copy_metadata(src, file.as_file(), true)?;
+	let meta = std::fs::metadata(src)?;
+	copy_metadata(&meta, file.as_file(), true)?;
 	write_finish(file, &dst)
 }
 
@@ -172,13 +179,8 @@ where P: AsRef<Path> {
 	file.write_all(data)?;
 	file.flush()?;
 
-	let touched = touch_if(&dst)?;
-	if let Err(e) = copy_metadata(&dst, file.as_file(), false).and_then(|()| write_finish(file, &dst)) {
-		// If we created the file earlier, try to remove it.
-		if touched { let _res = std::fs::remove_file(dst); }
-		Err(e)
-	}
-	else { Ok(()) }
+	try_copy_metadata(&dst, file.as_file())?;
+	write_finish(file, &dst)
 }
 
 
@@ -222,46 +224,57 @@ where P: AsRef<Path> {
 ///
 /// Make sure we don't lose details like permissions, ownership, etc., when
 /// replacing an existing file.
-fn copy_metadata(src: &Path, dst: &File, times: bool) -> Result<()> {
-	let metadata = match src.metadata() {
-		Ok(metadata) => metadata,
-		Err(ref e) if ErrorKind::NotFound == e.kind() => return Ok(()),
-		Err(e) => return Err(e),
-	};
-
-	dst.set_permissions(metadata.permissions())?;
+fn copy_metadata(src: &Metadata, dst: &File, times: bool) -> Result<()> {
+	// Copy permissions.
+	dst.set_permissions(src.permissions())?;
 
 	#[cfg(unix)]
-	copy_ownership(&metadata, dst)?;
+	// Copy ownership.
+	std::os::unix::fs::fchown(dst, Some(src.uid()), Some(src.gid()))?;
 
-	// Copy times?
+	// Copy file times too?
 	if times {
-		let atime = FileTime::from_last_access_time(&metadata);
-		let mtime = FileTime::from_last_modification_time(&metadata);
+		let atime = FileTime::from_last_access_time(src);
+		let mtime = FileTime::from_last_modification_time(src);
 		let _res = filetime::set_file_handle_times(dst, Some(atime), Some(mtime));
 	}
 
 	Ok(())
 }
 
-#[cfg(unix)]
-/// # Copy Ownership.
+/// # Try Copy Metadata.
 ///
-/// Copy the owner/group details from `src` to `dst`.
-fn copy_ownership(src: &std::fs::Metadata, dst: &File) -> Result<()> {
-	use std::os::unix::fs::MetadataExt;
-	std::os::unix::fs::fchown(dst, Some(src.uid()), Some(src.gid()))
-}
+/// For `write_file` operations, there isn't necessarily an existing file to
+/// copy permissions from.
+///
+/// This method will (temporarily) create one if missing so that the default
+/// file permissions can at least be synced.
+fn try_copy_metadata(src: &Path, dst: &File) -> Result<()> {
+	match std::fs::metadata(src) {
+		// We have a source! Copy the metadata as normal!
+		Ok(meta) => copy_metadata(&meta, dst, false),
 
-/// # Touch If Needed.
-///
-/// This creates paths that don't already exist to set the same default
-/// permissions and ownerships the standard library would.
-fn touch_if(dst: &Path) -> Result<bool> {
-	if dst.exists() { Ok(false) }
-	else {
-		File::create(dst)?;
-		Ok(true)
+		// The file doesn't exist; let's (briefly) create it and sync the
+		// permissions.
+		Err(ref e) if ErrorKind::NotFound == e.kind() => {
+			let mut res = Ok(());
+
+			// Try to create it.
+			if File::create(src).is_ok() {
+				// Grab the permissions.
+				if let Ok(perms) = std::fs::metadata(src).map(|m| m.permissions()) {
+					res = dst.set_permissions(perms);
+				}
+
+				// Clean up.
+				let _res = std::fs::remove_file(src);
+			}
+
+			res
+		},
+
+		// All other errors bubble.
+		Err(e) => Err(e),
 	}
 }
 
@@ -277,7 +290,6 @@ fn write_finish(file: NamedTempFile, dst: &Path) -> Result<()> {
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use std::fs::Metadata;
 
 	#[cfg(unix)]
 	/// # Get User/Group IDs.
