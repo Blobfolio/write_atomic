@@ -2,6 +2,23 @@
 
 
 
+## [0.7.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.7.0) - 2025-05-31
+
+### New
+
+* Re-export `tempfile`
+* Re-export `filetime`
+
+### Changed
+
+* Bump MSRV to `1.87`
+* `copy_file` now (tries to) copy access and modification times too
+* Improved documentation
+* Improved test coverage
+* Miscellaneous code cleanup and lints
+
+
+
 ## [0.6.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.6.0) - 2025-02-24
 
 ### Changed
