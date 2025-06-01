@@ -191,30 +191,23 @@ where P: AsRef<Path> {
 /// or an error if not.
 fn check_path<P>(src: P) -> Result<(PathBuf, PathBuf)>
 where P: AsRef<Path> {
-	let src = src.as_ref();
+	// Normalize the formatting.
+	let src = std::path::absolute(src)?;
 
 	// The path cannot be a directory.
 	if src.is_dir() {
 		return Err(Error::new(ErrorKind::InvalidInput, "Path cannot be a directory."));
 	}
 
-	// We don't need to fully canonicalize the path, but if there's no stub, it
-	// is assumed to be in the "current directory".
-	let src: PathBuf =
-		if src.is_absolute() { src.to_path_buf() }
-		else {
-			let mut absolute = std::env::current_dir()?;
-			absolute.push(src);
-			absolute
-		};
-
-	// Make sure it has a parent.
-	let parent: PathBuf = src.parent()
-		.map(Path::to_path_buf)
+	// The path must have a parent.
+	let parent = src.parent()
 		.ok_or_else(|| Error::new(ErrorKind::NotFound, "Path must have a parent directory."))?;
 
-	// Create the directory chain if necessary.
-	std::fs::create_dir_all(&parent)?;
+	// Create the parent if it doesn't already exist.
+	std::fs::create_dir_all(parent)?;
+
+	// It has to be owned for return purposes.
+	let parent = parent.to_path_buf();
 
 	// We're good to go!
 	Ok((src, parent))
