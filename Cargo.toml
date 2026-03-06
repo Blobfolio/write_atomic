@@ -1,6 +1,6 @@
 [package]
 name = "write_atomic"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["Josh Stoik <josh@blobfolio.com>"]
 edition = "2024"
 rust-version = "1.87"
@@ -22,4 +22,4 @@ name = "write_atomic"
 
 [dependencies]
 filetime = "0.2.*"
-tempfile = "3.20.0"
+tempfile = "3.26.0"
