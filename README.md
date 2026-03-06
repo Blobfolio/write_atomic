@@ -29,7 +29,7 @@ write_atomic::write_file("/path/to/my-file.txt", b"Some data!").unwrap();
 
 Add `write_atomic` to your `dependencies` in `Cargo.toml`, like:
 
-```
+```toml
 [dependencies]
-write_atomic = "0.6.*"
+write_atomic = "0.7.*"
 ```
