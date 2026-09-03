@@ -1,9 +1,9 @@
 [package]
 name = "write_atomic"
-version = "0.7.1"
+version = "0.8.0"
 authors = ["Josh Stoik <josh@blobfolio.com>"]
 edition = "2024"
-rust-version = "1.87"
+rust-version = "1.94"
 description = "Write to files atomically."
 license = "WTFPL"
 repository = "https://github.com/Blobfolio/write_atomic"
@@ -21,5 +21,4 @@ exclude = [
 name = "write_atomic"
 
 [dependencies]
-filetime = "0.2.*"
-tempfile = "3.26.0"
+tempfile = "3.27.0"

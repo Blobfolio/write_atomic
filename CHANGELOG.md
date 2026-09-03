@@ -1,13 +1,19 @@
 # Changelog
 
 
+## [0.8.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.8.0) - 2026-09-02
+
+### Changed
+
+* Remove `filetime` dependency (use `std` methods directly)
+* Bump MSRV to `1.94`
+
 
 ## [0.7.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.7.1) - 2026-03-05
 
 ### Changed
 
 * Miscellaneous code cleanup and lints
-
 
 
 ## [0.7.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.7.0) - 2025-05-31
@@ -26,7 +32,6 @@
 * Miscellaneous code cleanup and lints
 
 
-
 ## [0.6.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.6.0) - 2025-02-24
 
 ### Changed
@@ -35,13 +40,11 @@
 * Bump Rust edition to 2024
 
 
-
 ## [0.5.3](https://github.com/Blobfolio/write_atomic/releases/tag/v0.5.3) - 2025-02-20
 
 ### Changed
 
 * Miscellaneous code cleanup and lints
-
 
 
 ## [0.5.2](https://github.com/Blobfolio/write_atomic/releases/tag/v0.5.2) - 2024-11-28
@@ -52,13 +55,11 @@
 * Miscellaneous code cleanup and lints
 
 
-
 ## [0.5.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.5.1) - 2024-09-05
 
 ### Changed
 
 * Miscellaneous code cleanup and lints
-
 
 
 ## [0.5.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.5.0) - 2023-10-05
@@ -70,13 +71,11 @@
 * Direct library code is now 100% safe
 
 
-
 ## [0.4.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.4.1) - 2023-09-10
 
 ### Changed
 
 * Remove unnecessary `BufWriter` wrapper
-
 
 
 ## [0.4.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.4.0) - 2023-07-24
@@ -88,11 +87,9 @@
 * Bump MSRV to `1.63`
 
 
-
 ## [0.3.2](https://github.com/Blobfolio/write_atomic/releases/tag/v0.3.2) - 2023-06-01
 
 This release improves the unit testing coverage, but has no user-facing changes.
-
 
 
 ## [0.3.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.3.1) - 2023-03-31
@@ -112,13 +109,11 @@ This release improves the unit testing coverage, but has no user-facing changes.
 * Improve performance of `copy_file`;
 
 
-
 ## [0.2.10](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.10) - 2023-03-03
 
 ### Changed
 
 * Bump `tempfile` to `3.4.0`
-
 
 
 ## [0.2.9](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.9) - 2023-02-13
@@ -128,7 +123,6 @@ This release improves the unit testing coverage, but has no user-facing changes.
 * Support `fastrand` up to `1.9.0`
 
 
-
 ## [0.2.8](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.8) - 2023-01-26
 
 ### Changed
@@ -136,13 +130,11 @@ This release improves the unit testing coverage, but has no user-facing changes.
 * Doc changes (copyright year, etc.)
 
 
-
 ## [0.2.7](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.7) - 2022-11-03
 
 ### Changed
 
 * Remove unneeded borrow
-
 
 
 ## [0.2.6](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.6) - 2022-09-22
@@ -153,13 +145,11 @@ This release improves the unit testing coverage, but has no user-facing changes.
 * Improve docs
 
 
-
 ## [0.2.5](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.5) - 2022-07-30
 
 ### Added
 
 * `copy_file`
-
 
 
 ## [0.2.4](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.4) - 2022-07-24
@@ -169,13 +159,11 @@ This release improves the unit testing coverage, but has no user-facing changes.
 * Bump `fastrand` 1.8.0
 
 
-
 ## [0.2.3](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.3) - 2022-05-19
 
 ### Changed
 
 * Update and lock third-party dependency versions
-
 
 
 ## [0.2.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.1) - 2022-01-10
@@ -184,7 +172,6 @@ This release improves the unit testing coverage, but has no user-facing changes.
 
 * Update dependencies.
 * Replace `rand` with `fastrand`.
-
 
 
 ## [0.2.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.2.0) - 2021-10-21

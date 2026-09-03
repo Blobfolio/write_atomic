@@ -74,10 +74,10 @@ write_atomic::write_file("/path/to/my-file.txt", b"Some data!").unwrap();
 
 
 
-use filetime::FileTime;
 use std::{
 	fs::{
 		File,
+		FileTimes,
 		Metadata,
 	},
 	io::{
@@ -96,8 +96,7 @@ use tempfile::NamedTempFile;
 #[cfg(unix)]
 use std::os::unix::fs::MetadataExt;
 
-// Re-export both dependencies.
-pub use filetime;
+// Re-export dependencies.
 pub use tempfile;
 
 
@@ -227,9 +226,23 @@ fn copy_metadata(src: &Metadata, dst: &File, times: bool) -> Result<()> {
 
 	// Copy file times too?
 	if times {
-		let atime = FileTime::from_last_access_time(src);
-		let mtime = FileTime::from_last_modification_time(src);
-		let _res = filetime::set_file_handle_times(dst, Some(atime), Some(mtime));
+		let mut any = false;
+		let mut times = FileTimes::new();
+
+		// Pull what we can.
+		if let Ok(atime) = src.accessed() {
+			times = times.set_accessed(atime);
+			any = true;
+		}
+		if let Ok(mtime) = src.modified() {
+			times = times.set_modified(mtime);
+			any = true;
+		}
+
+		// If we got either or both time type, try to copy to the destination.
+		if any {
+			let _res = dst.set_times(times);
+		}
 	}
 
 	Ok(())
@@ -322,9 +335,8 @@ mod tests {
 			"Copied ownership not equal.",
 		);
 
-		assert_eq!(
-			FileTime::from_last_modification_time(&meta1),
-			FileTime::from_last_modification_time(&meta2),
+		assert!(
+			meta1.modified().unwrap() == meta2.modified().unwrap(),
 			"Copied mtimes not equal.",
 		);
 
@@ -352,9 +364,8 @@ mod tests {
 		);
 
 		// This time around the times should be different!
-		assert_ne!(
-			FileTime::from_last_modification_time(&meta1),
-			FileTime::from_last_modification_time(&meta2),
+		assert!(
+			meta1.modified().unwrap() != meta2.modified().unwrap(),
 			"Mtimes shouldn't match anymore!",
 		);
 
