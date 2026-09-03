@@ -6,6 +6,7 @@
 ### Changed
 
 * Remove `filetime` dependency (use `std` methods directly)
+* Bump MSRV to `1.94`
 
 
 ## [0.7.1](https://github.com/Blobfolio/write_atomic/releases/tag/v0.7.1) - 2026-03-05
