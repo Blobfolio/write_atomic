@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.9.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.9.0) - 2026-10-01
+
+### Changed
+
+* Bump MSRV to `1.95`
+
+
 ## [0.8.0](https://github.com/Blobfolio/write_atomic/releases/tag/v0.8.0) - 2026-09-02
 
 ### Changed
